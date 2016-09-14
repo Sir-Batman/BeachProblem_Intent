@@ -22,6 +22,15 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
+#ifndef _CONFIG_H
+#define _CONFIG_H
+
+/* Variable definitions */
+#define BEACH_WIDTH 6
+#define NUM_GENERATIONS 10000
+#define TIMESTEPS 100
+#define NUM_AGENTS 10 // Defines the number of agents on a beach
+
 /* FANN */
 #include <fann.h>
 #include <fann_cpp.h>
@@ -50,3 +59,4 @@ struct netConfig
 };
 
 
+#endif

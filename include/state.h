@@ -26,25 +26,17 @@
 #ifndef _STATE_H
 #define _STATE_H
 
+#include "config.h"
+
 /* Define the indicies to be used by the state variable globally, so everyone
  * uses the proper index */
-enum
-{
-	AGENTS_A,
-	POI_A,
-	AGENTS_B,
-	POI_B,
-	AGENTS_C,
-	POI_C,
-	AGENTS_D,
-	POI_D,
-	CARRYING
-};
+
+#define SELF_POS 0
 
 typedef struct State {
 
 	double& operator[](int i) { return array[i]; }
-	double array[9];
+	double array[BEACH_WIDTH+1];
 
 } State;
 
