@@ -22,43 +22,37 @@
 
 #include "agent.h"
 
-Agent::Agent() {
-
-	this->carrying = false;
-	this->numCarried = 0;
-	this->holding = NULL;
-	this->p = Position(0, 0);
+/* The default copy constructor makes things unsusable at start,
+ * since values such as the NN are to be set by outside factors.
+ * This class serves as the controlling wrapper, not the setting wrapper.
+ */
+Agent::Agent()
+{
+	this->pos = -1; 
 	this->reward = 0;
-
+	this->policy = NULL;
 }
 
-Agent::Agent(bool carrying, POI* holding, Position pos) {
-
-	this->carrying = carrying;
-	this->holding = holding;
-	this->numCarried = 0;
-	this->p = pos.copy();
+/* Initialize the position to the value given, and
+ * set the net to point to the one given. */
+Agent::Agent(int pos, FANN::neural_net *policy)
+{
+	this->pos = pos;
 	this->reward = 0;
+	this->policy = policy;
 }
 
-//  copy constructor
+//  copy constructor TODO figure out how much changing this needs
 Agent::Agent(const Agent& that)
 {
-
-	this->carrying = that.carrying;
-	this->holding = that.holding;
-	this->numCarried = that.numCarried;
-	this->p = that.p;
+	this->pos = that.pos;
 	this->reward = that.reward;
 }
 
-// copy assignment operator
+// copy assignment operator TODO look at FANN::neural_net * in here.
 Agent& Agent::operator=(const Agent& that)
 {
-	this->carrying = that.carrying;
-	this->holding = that.holding;
-	this->numCarried = that.numCarried;
-	this->p = that.p;
+	this->pos = that.pos;
 	this->reward = that.reward;
     return *this;
 }
@@ -69,38 +63,11 @@ Agent& Agent::operator=(const Agent& that)
  * values. and the highest value represents the most favorable action the
  * policy has chosen */
 
-int Agent::nextAction(State s, Position self_pos, Home home, FANN::neural_net* net) {
-	
-	//  if the agent is carrying a POI, force the agent to step toward home
-	if (this->isCarrying())
-	{
-		Position home_pos = home.getPosition();
-
-		//  if the agent is on top of the home base, force the agent to set 
-		//  down the poi
-		if (home_pos == self_pos) return SET_DOWN;
-
-		if (abs(self_pos.getX() - home_pos.getX()) > abs(self_pos.getY() - home_pos.getY()))
-		{
-			if (self_pos.getX() > home_pos.getX())
-			{
-				return MOVE_LEFT;
-			}
-			else { 
-				return MOVE_RIGHT; }
-		}
-		else{
-			if (self_pos.getY() > home_pos.getY())
-			{
-				return MOVE_UP;
-			}
-			else { 
-				return MOVE_DOWN; }
-		}
-	}
-
+int Agent::nextAction(State s)
+{
+	//TODO change dimensions in here
 	/* Picks the output from the neural net */
-	fann_type* output = net->run( (fann_type*) s.array);
+	fann_type* output = policy->run( (fann_type*) s.array);
 
 	int max_i = 0;
 	for (int i = 0; i < 6; ++i)
@@ -111,37 +78,18 @@ int Agent::nextAction(State s, Position self_pos, Home home, FANN::neural_net* n
 	return max_i;
 }
 
-//  is the agent carrying anything?
-bool Agent::isCarrying() { return this->carrying; }
-//  set the carrying signal appropriately
-void Agent::setCarrying(bool set) { 
-	this->carrying = set; 
-}
+int Agent::getPos() { return this->pos; }
 
-//  return the POI the agent is holding
-POI* Agent::getHoldingPOI() { return this->holding;}
-//  set the POI the agent is holding
-void Agent::setHoldingPOI(POI* poi) { if (!this->isCarrying()) this->holding = poi; }
-
-Position Agent::getP() { return this->p; }
-
-void Agent::setP(Position pos) { this->p = pos; }
-
-void Agent::hasCarried() {
-	this->numCarried++;
-}
-
-int Agent::numberCarried() {
-	return this->numCarried;
-}
+void Agent::setPos(int pos) { this->pos = pos; }
 
 double Agent::getReward()
 {
+	//TODO rewards will need restructuring
 	/* This calculates a quick and dirty form of D.
 	 * It returns the scaled reward based on how many
 	 * POI the agent carried in its lifetime.
 	 * This is the same as G(v)-G(v-i). */
-	return (double)(this->numCarried * 5)/2.0 + this->reward;
+	//return (double)(this->numCarried * 5)/2.0 + this->reward;
 }
 
 void Agent::incReward(double inc)

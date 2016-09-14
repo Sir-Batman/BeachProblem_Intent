@@ -30,7 +30,7 @@ class POI;
 #include <cstdlib>
 #include <fann.h>
 #include <fann_cpp.h>
-#include "config.h"
+//#include "config.h"
 //#include "position.h"
 //#include "poi.h"
 #include "state.h"
@@ -47,16 +47,18 @@ enum
 class Agent {
 
 	private:
-		bool carrying;       // is the agent carrying a poi?
-		int numCarried;     //  has the agent ever carried a poi?
-		Position p;          // current position in world
-		POI* holding;        // points to the poi an agent is carrying (or NULL)
+		//bool carrying;       // is the agent carrying a poi?
+		//int numCarried;     //  has the agent ever carried a poi?
+		int pos;          // current position in world
+		//POI* holding;        // points to the poi an agent is carrying (or NULL)
 		double reward;
+		
+		FANN::neural_net *policy;
 
 	public:	
 		//  constructors
 		Agent();
-		Agent(bool, POI*, Position);
+		Agent(int, FANN::neural_net *);
 		//  copy constructor
 		Agent(const Agent&);
 		// copy assignment operator
@@ -64,29 +66,21 @@ class Agent {
 
 		//  get the next action for the agent based on the
 		//  current state and the neural net
-		int nextAction(State, Position, Home, FANN::neural_net*);
-
-		//  is the agent carrying anything?
-		bool isCarrying();
-		//  set the carrying signal appropriately
-		void setCarrying(bool);
-
-		//  return the POI the agent is holding
-		POI* getHoldingPOI();
-		//  set the POI the agent is holding
-		void setHoldingPOI(POI*);
-
-		Position getP();
-		void setP(Position);
+		int nextAction(State);
 
 		double getReward();
 
-		void hasCarried();
+		//void hasCarried();
 
 		int numberCarried();
 
 		void incReward(double);
-
+		
+		// Set the internal position
+		void setPos(int);
+		
+		// Get the internal Position
+		int getPos();
 };
 
 #endif
