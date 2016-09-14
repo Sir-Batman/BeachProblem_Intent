@@ -1,8 +1,8 @@
 CC=g++
-CFLAGS=--std=c++11 -lfann
+CFLAGS=--std=c++11 -lfann -I include/
 EXE=beach_sim.out
 
-.PHONY: debug debug-flags default all fast fast-flags
+.PHONY: debug debug-flags default all fast fast-flags test
 
 default: all
 
@@ -16,10 +16,15 @@ debug-flags:
 
 debug: | debug-flags all
 
+test: | debug-flags test-compile
+
 all: agent.o 
 	$(CC) $(CFLAGS) agent.o -o $(EXE)
 
-agent.o: agent.cpp agent.h state.h
+test-compile: test.o
+	$(CC) $(CFLAGS) test.o -o test.out
+
+agent.o: agent.cpp include/agent.h include/state.h
 	$(CC) $(CFLAGS) -c agent.cpp -o agent.o
 
 clean:

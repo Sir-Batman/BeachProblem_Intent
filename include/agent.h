@@ -4,6 +4,9 @@
 *  This class is an object representation of the agents on a beach 
 *  trying to find a place to sit.  
 *
+*  NOTE: This class does not perform memory management on the policies.
+*
+*
 *  Copyright (C) 2016 Connor Yates
 
 *  This program is free software: you can redistribute it and/or modify
