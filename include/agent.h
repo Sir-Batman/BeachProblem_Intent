@@ -23,8 +23,8 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
-#ifndef AGENT_INCLUDED
-#define AGENT_INCLUDED
+#ifndef _AGENT_H
+#define _AGENT_H
 
 class POI; 
 
@@ -37,6 +37,7 @@ class POI;
 //#include "position.h"
 //#include "poi.h"
 #include "state.h"
+//#include "config.h"
 //#include "Home.h"
 
 /* enumeration of action behaviors */
@@ -50,6 +51,7 @@ enum
 class Agent {
 
 	private:
+		//TODO add id?
 		//bool carrying;       // is the agent carrying a poi?
 		//int numCarried;     //  has the agent ever carried a poi?
 		int pos;          // current position in world
