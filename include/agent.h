@@ -63,7 +63,7 @@ class Agent {
 	public:	
 		//  constructors
 		Agent();
-		Agent(int, FANN::neural_net *);
+		Agent(FANN::neural_net *);
 		//  copy constructor
 		Agent(const Agent&);
 		// copy assignment operator
@@ -86,6 +86,14 @@ class Agent {
 		
 		// Get the internal Position
 		int getPos();
+
+		void setReward(double);
+
+		FANN::neural_net* getPolicyAddress();
+
+		bool operator<(const Agent&);
+		
+		void setAddress(FANN::neural_net *);
 };
 
 #endif

@@ -18,17 +18,23 @@ debug: | debug-flags all
 
 test: | debug-flags test-compile
 
-all: agent.o beach.o
-	$(CC) $(CFLAGS) agent.o -o $(EXE)
+all: agent.o beach.o controller.o
+	$(CC) $(CFLAGS) agent.o beach.o controller.o -o $(EXE)
 
-test-compile: test.o
-	$(CC) $(CFLAGS) test.o -o test.out
+test-compile: test.o beach.o agent.o
+	$(CC) $(CFLAGS) test.o beach.o agent.o -o test.out
 
 agent.o: agent.cpp 
 	$(CC) $(CFLAGS) -c agent.cpp -o agent.o
 
 beach.o: beach.cpp
 	$(CC) $(CFLAGS) -c beach.cpp -o beach.o
+
+test.o: test.cpp
+	$(CC) $(CFLAGS) -c test.cpp -o test.o
+
+controller.o: controller.cpp
+	$(CC) $(CFLAGS) -c controller.cpp -o controller.o
 
 clean:
 	rm -f *.o $(EXE)

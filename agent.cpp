@@ -35,9 +35,9 @@ Agent::Agent()
 
 /* Initialize the position to the value given, and
  * set the net to point to the one given. */
-Agent::Agent(int pos, FANN::neural_net *policy)
+Agent::Agent(FANN::neural_net *policy)
 {
-	this->pos = pos;
+	this->pos = -1;
 	this->reward = 0;
 	this->policy = policy;
 }
@@ -47,6 +47,7 @@ Agent::Agent(const Agent& that)
 {
 	this->pos = that.pos;
 	this->reward = that.reward;
+	this->policy = that.policy;
 }
 
 // copy assignment operator TODO look at FANN::neural_net * in here.
@@ -54,6 +55,7 @@ Agent& Agent::operator=(const Agent& that)
 {
 	this->pos = that.pos;
 	this->reward = that.reward;
+	this->policy = that.policy;
     return *this;
 }
 
@@ -65,6 +67,8 @@ Agent& Agent::operator=(const Agent& that)
 
 int Agent::nextAction(State s)
 {
+	//TODO remove temp return that forces agents to take a predictable action
+	return -0;
 	//TODO change dimensions in here
 	/* Picks the output from the neural net */
 	fann_type* output = policy->run( (fann_type*) s.array);
@@ -90,9 +94,27 @@ double Agent::getReward()
 	 * POI the agent carried in its lifetime.
 	 * This is the same as G(v)-G(v-i). */
 	//return (double)(this->numCarried * 5)/2.0 + this->reward;
+	return this->reward;
 }
 
 void Agent::incReward(double inc)
 {
 	this->reward += inc;
 }
+
+void Agent::setReward(double r)
+{
+	this->reward = r;
+}
+
+FANN::neural_net* Agent::getPolicyAddress()
+{
+	return this->policy;
+}
+
+bool Agent::operator< (const Agent &that)
+{
+	return this->reward < that.reward;
+}
+
+void Agent::setAddress(FANN::neural_net *p) { this->policy = p; }

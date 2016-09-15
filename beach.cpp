@@ -90,10 +90,16 @@ void Beach::ExecuteTimeStep()
 
 double Beach::G()
 {
+	return 0;
 }
 
-double Beach::D(double g)
+void Beach::D(std::vector<double> &rewards)
 {
+	double g = this->G();
+	for (int a = 0; a < NUM_AGENTS; ++a)
+	{
+		rewards.push_back(rand()%50); // TODO add a real calculation of D
+	}
 }
 
 void Beach::RunBeach()
@@ -104,4 +110,56 @@ void Beach::RunBeach()
 	}
 }
 
+void Beach::RandomInit()
+{
+	for (int a_id = 0; a_id < NUM_AGENTS; ++a_id)
+	{
+		int position = rand() % BEACH_WIDTH;
+		agents[a_id].setPos(position);
+		++beach_sections[position];
+	}
+}
+
+void Beach::Print()
+{
+	std::cout << "num_agents == agents.size: " << num_agents << " "<<agents.size()<<std::endl;
+	std::cout << "agent positions: [";
+	for (int a_id=0; a_id < num_agents; ++a_id)
+	{
+		std::cout << agents[a_id].getPos() << " ";
+	}
+	std::cout << "]" << std::endl;
+	std::cout << "Beach: [";
+	for (int i=0; i < BEACH_WIDTH; ++i)
+	{
+		std::cout << beach_sections[i] << " ";
+	}
+	std::cout << "]" << std::endl;
+}
+
+int Beach::getnum_agents() { return num_agents; }
+
+void Beach::setAgents(std::vector<Agent> agents)
+{
+	assert(this->agents.size() == 0);
+	assert(agents.size() == NUM_AGENTS);
+	this->agents = agents;
+}
+
+void Beach::clearAgents() { this->agents.clear(); }
+
+void Beach::RewardAgents()
+{
+	std::vector<double> rewards;
+	this->D(rewards);
+	for (int a = 0; a < NUM_AGENTS; ++a)
+	{
+		this->agents[a].setReward(rewards[a]);
+	}
+}
+
+void Beach::extractAgents(std::vector<Agent> &other)
+{
+	other = this->agents;
+}
 

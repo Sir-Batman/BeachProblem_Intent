@@ -1,7 +1,8 @@
 /*********************************************************************
-*  beach.h
+*  test.cpp
 *
-*  TODO add description
+*  Contains unit tests and a main for running them.
+*  Tests the rest of the code base.
 *
 *  Copyright (C) 2016 Connor Yates
 
@@ -19,46 +20,23 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
-#ifndef _BEACH_H
-#define _BEACH_H
+#ifndef _CONTROLLER_H
+#define _CONTROLLER_H
 
 #include <vector>
 #include <iostream>
 #include <cstdlib>
+#include <algorithm>
+#include <random>
 
 #include <fann.h>
 #include <fann_cpp.h>
 
-#include "config.h"
 #include "agent.h"
-#include "state.h"
+#include "beach.h"
+#include "config.h"
 
-class Beach
-{
-	private:
-		/* Members */
-		std::vector<Agent> agents;
-		int beach_sections[BEACH_WIDTH];
-		int num_agents;
-
-		/* Methods */
-		std::vector<int> GetAgentActions();
-		State CalculateState(int agent_id);
-		void ExecuteTimeStep();
-		double G();
-		void D(std::vector<double> &);
-
-	public:
-		/* Methods */
-		Beach();
-		void RunBeach();
-		void RandomInit();
-		void Print();
-		int getnum_agents();
-		void setAgents(std::vector<Agent>);
-		void clearAgents();
-		void RewardAgents();
-		void extractAgents(std::vector<Agent> &);
-};
+/* Prototypes */
+void destroyPolicies(std::vector<FANN::neural_net *> &policies);
 
 #endif
