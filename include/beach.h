@@ -25,6 +25,7 @@
 #include <vector>
 #include <iostream>
 #include <cstdlib>
+#include <float.h>
 
 #include <fann.h>
 #include <fann_cpp.h>

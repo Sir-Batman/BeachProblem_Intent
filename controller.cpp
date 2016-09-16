@@ -117,7 +117,7 @@ int main()
 	std::vector<Agent> agents;
 	for (int gen = 0; gen < NUM_GENERATIONS; ++gen)
 	{
-		std::cout << "BEGINING GENERATION" << std::endl;
+		std::cout << "BEGINING GENERATION " <<  gen << std::endl;
 		/* Make random teams of agents */
 		/* Create Agents */
 		agents.clear();

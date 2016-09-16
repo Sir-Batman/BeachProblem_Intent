@@ -173,11 +173,14 @@ void Beach::RewardAgents()
 {
 	std::vector<double> rewards;
 	this->D(rewards);
-	double max = -1000;
+	double max = -DBL_MAX;
 	for (int a = 0; a < NUM_AGENTS; ++a)
 	{
 		this->agents[a].setReward(rewards[a]);
-		max > rewards[a] ? max : rewards[a];
+		if (max < rewards[a])
+		{
+			max = rewards[a];
+		}
 	}
 	std::cout << "Max reward: " << max << std::endl;
 }

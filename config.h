@@ -26,9 +26,9 @@
 #define _CONFIG_H
 
 /* Variable definitions */
-#define NUM_GENERATIONS 100
-#define TIMESTEPS 100
-#define NUM_AGENTS 100 // Defines the number of agents on a beach
+#define NUM_GENERATIONS 100000
+#define TIMESTEPS 50
+#define NUM_AGENTS 30 // Defines the number of agents on a beach
 #define NUM_BEACHES 5
 #define BEACH_WIDTH 6
 #define PSI 10 // Defines the optimal capacity of people on a section of a beach.
