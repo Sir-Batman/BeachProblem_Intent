@@ -67,14 +67,11 @@ Agent& Agent::operator=(const Agent& that)
 
 int Agent::nextAction(State s)
 {
-	//TODO remove temp return that forces agents to take a predictable action
-	return -0;
-	//TODO change dimensions in here
 	/* Picks the output from the neural net */
 	fann_type* output = policy->run( (fann_type*) s.array);
 
 	int max_i = 0;
-	for (int i = 0; i < 6; ++i)
+	for (int i = 0; i < NN_OUT_LAYER; ++i)
 	{
 		if (output[i] > output[max_i]) { max_i = i; }
 	}

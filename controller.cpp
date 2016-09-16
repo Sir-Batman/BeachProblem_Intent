@@ -97,10 +97,10 @@ int main()
 	NC.net_type = FANN::LAYER;
 	NC.num_layers = NUMBER_OF_LAYERS;
 	NC.layers = new unsigned int[NUMBER_OF_LAYERS];
-	NC.layers[0] = 9;
+	NC.layers[0] = NN_INPUT_LAYER;
 	NC.layers[1] = 18;
 	NC.layers[2] = 9;
-	NC.layers[3] = 4;
+	NC.layers[3] = NN_OUT_LAYER;
 	NC.randWeights = RANDOM_WEIGHTS;
 	NC.randMin = RANDOM_NET_MIN;
 	NC.randMax = RANDOM_NET_MAX;
