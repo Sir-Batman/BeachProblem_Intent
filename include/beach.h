@@ -42,11 +42,12 @@ class Beach
 		int num_agents;
 
 		/* Methods */
-		std::vector<int> GetAgentActions();
+		//std::vector<int> GetAgentActions();
 		State CalculateState(int agent_id);
 		void ExecuteTimeStep();
 		double G();
 		void D(std::vector<double> &);
+		double L(double);
 
 	public:
 		/* Methods */

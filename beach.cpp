@@ -33,10 +33,12 @@ Beach::Beach()
 	this->agents.reserve(NUM_AGENTS);
 }
 
+/*
 std::vector<int> Beach::GetAgentActions()
 {
 	// currently unused
 }
+*/
 
 
 State Beach::CalculateState(int agent_id)
@@ -88,17 +90,36 @@ void Beach::ExecuteTimeStep()
 	// TODO Log information?
 }
 
+/* Calculates the reward for an individual beach section 
+ * given the number of people on the section of the beach.
+ * PSI defined in config.h */
+double Beach::L(double x_t)
+{
+	return x_t * (exp(-1*x_t / PSI));
+}
+
 double Beach::G()
 {
-	return 0;
+	double total = 0;
+	for (int s = 0; s < BEACH_WIDTH; ++s)
+	{
+		/* Add the reward for section S to the total */
+		total += L(this->beach_sections[s]);
+	}
+	return total;
 }
 
 void Beach::D(std::vector<double> &rewards)
 {
-	double g = this->G();
+	if (rewards.size() != 0)
+	{
+		std::cerr << "Rewards vector non-zero length. Clearing..." << std::endl;
+		rewards.clear();
+	}
 	for (int a = 0; a < NUM_AGENTS; ++a)
 	{
-		rewards.push_back(rand()%50); // TODO add a real calculation of D
+		int s = agents[a].getPos();
+		rewards.push_back(L(beach_sections[s]) - L(beach_sections[s] - 1));
 	}
 }
 
@@ -152,10 +173,13 @@ void Beach::RewardAgents()
 {
 	std::vector<double> rewards;
 	this->D(rewards);
+	double max = -1000;
 	for (int a = 0; a < NUM_AGENTS; ++a)
 	{
 		this->agents[a].setReward(rewards[a]);
+		max > rewards[a] ? max : rewards[a];
 	}
+	std::cout << "Max reward: " << max << std::endl;
 }
 
 void Beach::extractAgents(std::vector<Agent> &other)
