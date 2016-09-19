@@ -28,6 +28,7 @@
 #include <cstdlib>
 #include <algorithm>
 #include <random>
+#include <fstream>
 
 #include <fann.h>
 #include <fann_cpp.h>

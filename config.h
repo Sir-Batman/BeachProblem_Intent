@@ -26,12 +26,12 @@
 #define _CONFIG_H
 
 /* Variable definitions */
-#define NUM_GENERATIONS 100000
-#define TIMESTEPS 50
-#define NUM_AGENTS 30 // Defines the number of agents on a beach
-#define NUM_BEACHES 5
+#define NUM_GENERATIONS 10000
+#define TIMESTEPS 25
+#define NUM_AGENTS 20 // Defines the number of agents on a beach
+#define NUM_BEACHES 1
 #define BEACH_WIDTH 6
-#define PSI 10 // Defines the optimal capacity of people on a section of a beach.
+#define PSI 3 // Defines the optimal capacity of people on a section of a beach.
 
 /* nn variables */
 #define NUMBER_OF_LAYERS 4

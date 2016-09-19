@@ -26,6 +26,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <float.h>
+#include <fstream>
 
 #include <fann.h>
 #include <fann_cpp.h>
@@ -46,7 +47,7 @@ class Beach
 		//std::vector<int> GetAgentActions();
 		State CalculateState(int agent_id);
 		void ExecuteTimeStep();
-		double G();
+		void G(std::vector<double> &);
 		void D(std::vector<double> &);
 		double L(double);
 
@@ -59,7 +60,7 @@ class Beach
 		int getnum_agents();
 		void setAgents(std::vector<Agent>);
 		void clearAgents();
-		void RewardAgents();
+		void RewardAgents(std::ofstream&);
 		void extractAgents(std::vector<Agent> &);
 };
 

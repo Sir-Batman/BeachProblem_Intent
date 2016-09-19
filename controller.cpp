@@ -114,6 +114,9 @@ int main()
 
 	//auto engine = std::mt19937{std::random_device{}()};
 
+	/* Open Logging files */
+	std::ofstream reward_file;
+	reward_file.open("data/max_rewards_1.csv");
 	std::vector<Agent> agents;
 	for (int gen = 0; gen < NUM_GENERATIONS; ++gen)
 	{
@@ -149,7 +152,7 @@ int main()
 		for (int i = 0; i < NUM_BEACHES; ++i)
 		{
 			coastline[i].RunBeach();
-			coastline[i].RewardAgents();
+			coastline[i].RewardAgents(reward_file);
 
 			/* Recreate a sortable version of the agents. */
 			std::vector<Agent> team;
@@ -182,19 +185,6 @@ int main()
 		/* Policies of lower half are destroyed. Now to make new ones and mutate */
 		doublePopulation(policies);
 	} // END GENERATION LOOP
-
-	// run generation \in generations
-	// 		make teams of agents
-	// 		give teams to beaches
-	// 		run time steps on beach
-	// 		calculate rewards of agents
-	// 		sort agents
-	// 		kill
-	// 		copy and mutate
-	// cleanup
-	// 		destryo policies
-	// 		close files
-	//
 
 	destroyPolicies(policies);
 	delete [] NC.layers;

@@ -98,7 +98,7 @@ double Beach::L(double x_t)
 	return x_t * (exp(-1*x_t / PSI));
 }
 
-double Beach::G()
+void Beach::G(std::vector<double> &rewards)
 {
 	double total = 0;
 	for (int s = 0; s < BEACH_WIDTH; ++s)
@@ -106,7 +106,15 @@ double Beach::G()
 		/* Add the reward for section S to the total */
 		total += L(this->beach_sections[s]);
 	}
-	return total;
+	if (rewards.size() != 0)
+	{
+		std::cerr << "Rewards vector non-zero length. Clearing..." << std::endl;
+		rewards.clear();
+	}
+	for (int a = 0; a < NUM_AGENTS; ++a)
+	{
+		rewards.push_back(total);
+	}
 }
 
 void Beach::D(std::vector<double> &rewards)
@@ -125,8 +133,15 @@ void Beach::D(std::vector<double> &rewards)
 
 void Beach::RunBeach()
 {
+	/* Sterilization and initialization */
+	for (int i = 0; i < BEACH_WIDTH; ++i)
+	{
+		beach_sections[i] = 0;
+	}
+	RandomInit();
 	for (int t = 0; t < TIMESTEPS; ++t)
 	{
+		//Print();
 		ExecuteTimeStep();
 	}
 }
@@ -143,19 +158,16 @@ void Beach::RandomInit()
 
 void Beach::Print()
 {
-	std::cout << "num_agents == agents.size: " << num_agents << " "<<agents.size()<<std::endl;
-	std::cout << "agent positions: [";
-	for (int a_id=0; a_id < num_agents; ++a_id)
+	std::cout << std::endl;
+	for (int section=0; section < BEACH_WIDTH; ++section)
 	{
-		std::cout << agents[a_id].getPos() << " ";
+		std::cout << "~";
+		for (int a=0; a < beach_sections[section]; ++a)
+		{
+			std::cout << "+";
+		}
+		std::cout << std::endl;
 	}
-	std::cout << "]" << std::endl;
-	std::cout << "Beach: [";
-	for (int i=0; i < BEACH_WIDTH; ++i)
-	{
-		std::cout << beach_sections[i] << " ";
-	}
-	std::cout << "]" << std::endl;
 }
 
 int Beach::getnum_agents() { return num_agents; }
@@ -169,20 +181,24 @@ void Beach::setAgents(std::vector<Agent> agents)
 
 void Beach::clearAgents() { this->agents.clear(); }
 
-void Beach::RewardAgents()
+void Beach::RewardAgents(std::ofstream &reward_out)
 {
 	std::vector<double> rewards;
 	this->D(rewards);
 	double max = -DBL_MAX;
+	std::cout << "Rewards: [";
 	for (int a = 0; a < NUM_AGENTS; ++a)
 	{
+		std::cout << rewards[a] << " ";
 		this->agents[a].setReward(rewards[a]);
 		if (max < rewards[a])
 		{
 			max = rewards[a];
 		}
 	}
+	std::cout << std::endl;
 	std::cout << "Max reward: " << max << std::endl;
+	reward_out << max << std::endl;;
 }
 
 void Beach::extractAgents(std::vector<Agent> &other)
