@@ -12,7 +12,7 @@ fast-flags:
 	$(eval CFLAGS += -O3)
 
 debug-flags: 
-	$(eval CFLAGS += -D DEBUG -Wall -g)
+	$(eval CFLAGS += -D DEBUG -Wall -g -pg)
 
 debug: | debug-flags all
 
