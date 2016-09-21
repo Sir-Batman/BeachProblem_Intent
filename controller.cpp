@@ -56,10 +56,9 @@ void doublePopulation(std::vector<FANN::neural_net*> &policies ) {
 
 	FANN::neural_net* mutateNet = NULL;
 
-	policies.reserve((policies.size() * 2) + 1);
+	policies.reserve(_NUM_AGENTS * _NUM_BEACHES);
 	auto it = policies.begin();
-	int size = policies.size();
-	for (int i = 0; i < size; ++i) {
+	for (int i = policies.size(); i < _NUM_AGENTS * _NUM_BEACHES; ++i) {
 		mutateNet = mutate(*it);
 		policies.push_back(mutateNet);
 		++it;
@@ -163,8 +162,6 @@ int main()
 		}
 		std::sort(agents.begin(), agents.end());
 
-		std::cout << "KILLING!" << std::endl;
-		std::cout << "size: " << agents.size()/2 << std::endl;
 		/* kill the older agents */
 		for (auto a_it = agents.begin(); a_it != agents.begin()+(agents.size()/2); ++a_it)
 		{
@@ -186,13 +183,15 @@ int main()
 			}
 			delete dead_policy;
 		}
+
 		/* Remove policies from successful agents */
+		/* useless from call inside previous loop
 		for (auto a_it = agents.begin()+(agents.size()/2); a_it != agents.end(); ++a_it)
 		{
 			a_it->setAddress(NULL);
 		}
+		*/
 		/* Policies of lower half are destroyed. Now to make new ones and mutate */
-		std::cout << "Policy size: " << policies.size() << std::endl;
 		doublePopulation(policies);
 	} // END GENERATION LOOP
 
