@@ -45,6 +45,7 @@ Agent::Agent(FANN::neural_net *policy)
 //  copy constructor TODO figure out how much changing this needs
 Agent::Agent(const Agent& that)
 {
+	//std::cout << "COPY CONSTRUCTOR!!!" << std::endl;
 	this->pos = that.pos;
 	this->reward = that.reward;
 	this->policy = that.policy;
@@ -53,17 +54,15 @@ Agent::Agent(const Agent& that)
 // copy assignment operator TODO look at FANN::neural_net * in here.
 Agent& Agent::operator=(const Agent& that)
 {
+	//std::cout << "EQUAL OPERATOR!!!" << std::endl;
 	this->pos = that.pos;
 	this->reward = that.reward;
 	this->policy = that.policy;
     return *this;
 }
 
-/* get next action based on state and return to Gridworld
- * The action is represented as a single integer, found as the index in the
- * ouput array with the max value. The output is the 6-array of [0,1] continuous 
- * values. and the highest value represents the most favorable action the
- * policy has chosen */
+/* The next action is chosen from three directions.
+ * Left, stay, and right. 0 = left, 1 = center, 2 = right */
 
 int Agent::nextAction(State s)
 {
@@ -71,7 +70,7 @@ int Agent::nextAction(State s)
 	fann_type* output = policy->run( (fann_type*) s.array);
 
 	int max_i = 0;
-	for (int i = 0; i < NN_OUT_LAYER; ++i)
+	for (int i = 0; i < _NN_OUT_LAYER; ++i)
 	{
 		if (output[i] > output[max_i]) { max_i = i; }
 	}

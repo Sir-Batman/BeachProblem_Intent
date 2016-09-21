@@ -23,14 +23,12 @@
 
 Beach::Beach()
 {
-	this->num_agents = NUM_AGENTS; // From config.h
-
-	for (int i = 0; i < BEACH_WIDTH; ++i)
+	for (int i = 0; i < _BEACH_WIDTH; ++i)
 	{
 		this->beach_sections[i] = 0;
 	}
 
-	this->agents.reserve(NUM_AGENTS);
+	this->agents.reserve(_NUM_AGENTS);
 }
 
 /*
@@ -46,7 +44,7 @@ State Beach::CalculateState(int agent_id)
 	State s;
 	s[SELF_POS] = agents[agent_id].getPos();
 	
-	for (int s_i = 1; s_i < BEACH_WIDTH +1; ++s_i)
+	for (int s_i = 1; s_i < _BEACH_WIDTH +1; ++s_i)
 	{
 		s[s_i] = beach_sections[s_i-1];
 	}
@@ -61,31 +59,32 @@ void Beach::ExecuteTimeStep()
 #endif
 	
 	/* Get agent actions */
-	int actions[NUM_AGENTS];
-	for (int a_id = 0; a_id < NUM_AGENTS; ++a_id)
+	int actions[_NUM_AGENTS];
+	for (int a_id = 0; a_id < _NUM_AGENTS; ++a_id)
 	{
 		State s_i = CalculateState(a_id);
 		actions[a_id] = agents[a_id].nextAction(s_i);
 	}
 
 	/* Move agents on beach */
-	for (int a_id = 0; a_id < NUM_AGENTS; ++a_id)
+	for (int a_id = 0; a_id < _NUM_AGENTS; ++a_id)
 	{
-		// calculate proper new position, with bounds checking
-		int pos_new = agents[a_id].getPos() + actions[a_id];
-		if (pos_new < 0)
+		/* calculate proper new position, with bounds checking. 
+		 * Subtract 1 to translate action to position modifier */
+		int pos_new = agents[a_id].getPos() + actions[a_id] - 1;
+		if (pos_new < 0 || pos_new == _BEACH_WIDTH)
 		{
-			pos_new = 0;
-		}
-		else if (pos_new > BEACH_WIDTH)
-		{
-			pos_new = BEACH_WIDTH;
+			pos_new = agents[a_id].getPos();
 		}
 
+		//std::cout << "OLD : " << pos_new << beach_sections[pos_new] << std::endl;
+		//std::cout << "      " << agents[a_id].getPos() << beach_sections[agents[a_id].getPos()] << std::endl;
 		// update positions
 		++beach_sections[pos_new];
 		--beach_sections[agents[a_id].getPos()];
 		agents[a_id].setPos(pos_new);
+		//std::cout << "NEW : " << pos_new <<" "<< beach_sections[pos_new] << std::endl;
+		//std::cout << "      " << agents[a_id].getPos() <<" "<< beach_sections[agents[a_id].getPos()] << std::endl;
 	}
 	// TODO Log information?
 }
@@ -95,13 +94,13 @@ void Beach::ExecuteTimeStep()
  * PSI defined in config.h */
 double Beach::L(double x_t)
 {
-	return x_t * (exp(-1*x_t / PSI));
+	return x_t * (exp(-1*x_t / _PSI));
 }
 
 void Beach::G(std::vector<double> &rewards)
 {
 	double total = 0;
-	for (int s = 0; s < BEACH_WIDTH; ++s)
+	for (int s = 0; s < _BEACH_WIDTH; ++s)
 	{
 		/* Add the reward for section S to the total */
 		total += L(this->beach_sections[s]);
@@ -111,7 +110,7 @@ void Beach::G(std::vector<double> &rewards)
 		std::cerr << "Rewards vector non-zero length. Clearing..." << std::endl;
 		rewards.clear();
 	}
-	for (int a = 0; a < NUM_AGENTS; ++a)
+	for (int a = 0; a < _NUM_AGENTS; ++a)
 	{
 		rewards.push_back(total);
 	}
@@ -124,7 +123,7 @@ void Beach::D(std::vector<double> &rewards)
 		std::cerr << "Rewards vector non-zero length. Clearing..." << std::endl;
 		rewards.clear();
 	}
-	for (int a = 0; a < NUM_AGENTS; ++a)
+	for (int a = 0; a < _NUM_AGENTS; ++a)
 	{
 		int s = agents[a].getPos();
 		rewards.push_back(L(beach_sections[s]) - L(beach_sections[s] - 1));
@@ -134,23 +133,25 @@ void Beach::D(std::vector<double> &rewards)
 void Beach::RunBeach()
 {
 	/* Sterilization and initialization */
-	for (int i = 0; i < BEACH_WIDTH; ++i)
+	for (int i = 0; i < _BEACH_WIDTH; ++i)
 	{
 		beach_sections[i] = 0;
 	}
 	RandomInit();
-	for (int t = 0; t < TIMESTEPS; ++t)
+	for (int t = 0; t < _TIMESTEPS; ++t)
 	{
 		//Print();
 		ExecuteTimeStep();
 	}
+	Print();
+
 }
 
 void Beach::RandomInit()
 {
-	for (int a_id = 0; a_id < NUM_AGENTS; ++a_id)
+	for (int a_id = 0; a_id < _NUM_AGENTS; ++a_id)
 	{
-		int position = rand() % BEACH_WIDTH;
+		int position = rand() % _BEACH_WIDTH;
 		agents[a_id].setPos(position);
 		++beach_sections[position];
 	}
@@ -159,7 +160,7 @@ void Beach::RandomInit()
 void Beach::Print()
 {
 	std::cout << std::endl;
-	for (int section=0; section < BEACH_WIDTH; ++section)
+	for (int section=0; section < _BEACH_WIDTH; ++section)
 	{
 		std::cout << "~";
 		for (int a=0; a < beach_sections[section]; ++a)
@@ -170,12 +171,10 @@ void Beach::Print()
 	}
 }
 
-int Beach::getnum_agents() { return num_agents; }
-
 void Beach::setAgents(std::vector<Agent> agents)
 {
 	assert(this->agents.size() == 0);
-	assert(agents.size() == NUM_AGENTS);
+	assert(agents.size() == _NUM_AGENTS);
 	this->agents = agents;
 }
 
@@ -187,7 +186,7 @@ void Beach::RewardAgents(std::ofstream &reward_out)
 	this->D(rewards);
 	double max = -DBL_MAX;
 	std::cout << "Rewards: [";
-	for (int a = 0; a < NUM_AGENTS; ++a)
+	for (int a = 0; a < _NUM_AGENTS; ++a)
 	{
 		std::cout << rewards[a] << " ";
 		this->agents[a].setReward(rewards[a]);
@@ -199,6 +198,18 @@ void Beach::RewardAgents(std::ofstream &reward_out)
 	std::cout << std::endl;
 	std::cout << "Max reward: " << max << std::endl;
 	reward_out << max << std::endl;;
+	
+	/* comparision to G */
+	rewards.clear();
+	this->G(rewards);
+	std::cout << "VS G: " << rewards[0] << std::endl;
+
+#ifdef DEBUG
+	/* debugging info */
+	std::cout << " INFO: " << agents.size() <<  std::endl;
+#endif
+
+
 }
 
 void Beach::extractAgents(std::vector<Agent> &other)

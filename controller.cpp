@@ -69,7 +69,7 @@ void doublePopulation(std::vector<FANN::neural_net*> &policies ) {
 
 void createPolicies(struct netConfig NC, std::vector<FANN::neural_net *> &policies)
 {
-	for (int i = 0; i < NUM_AGENTS * NUM_BEACHES; i++)
+	for (int i = 0; i < _NUM_AGENTS * _NUM_BEACHES; i++)
 	{
 		FANN::neural_net* newNet = new FANN::neural_net(NC.net_type, NC.num_layers, NC.layers);
 
@@ -95,22 +95,22 @@ int main()
 	/* Set up initial net configuration */
 	struct netConfig NC;
 	NC.net_type = FANN::LAYER;
-	NC.num_layers = NUMBER_OF_LAYERS;
-	NC.layers = new unsigned int[NUMBER_OF_LAYERS];
-	NC.layers[0] = NN_INPUT_LAYER;
+	NC.num_layers = _NUMBER_OF_LAYERS;
+	NC.layers = new unsigned int[_NUMBER_OF_LAYERS];
+	NC.layers[0] = _NN_INPUT_LAYER;
 	NC.layers[1] = 18;
 	NC.layers[2] = 9;
-	NC.layers[3] = NN_OUT_LAYER;
-	NC.randWeights = RANDOM_WEIGHTS;
-	NC.randMin = RANDOM_NET_MIN;
-	NC.randMax = RANDOM_NET_MAX;
+	NC.layers[3] = _NN_OUT_LAYER;
+	NC.randWeights = _RANDOM_WEIGHTS;
+	NC.randMin = _RANDOM_NET_MIN;
+	NC.randMax = _RANDOM_NET_MAX;
 
 	srand(time(NULL));
 
 	std::vector<FANN::neural_net *> policies;
 	createPolicies(NC, policies);
 
-	std::vector<Beach> coastline(NUM_BEACHES);
+	std::vector<Beach> coastline(_NUM_BEACHES);
 
 	//auto engine = std::mt19937{std::random_device{}()};
 
@@ -118,12 +118,13 @@ int main()
 	std::ofstream reward_file;
 	reward_file.open("data/max_rewards_1.csv");
 	std::vector<Agent> agents;
-	for (int gen = 0; gen < NUM_GENERATIONS; ++gen)
+	for (int gen = 0; gen < _NUM_GENERATIONS; ++gen)
 	{
 		std::cout << "BEGINING GENERATION " <<  gen << std::endl;
 		/* Make random teams of agents */
 		/* Create Agents */
 		agents.clear();
+		agents.reserve(policies.size());
 		//std::shuffle(policies.begin(), policies.end(), engine);
 		std::random_shuffle(policies.begin(), policies.end());
 		for (auto p_it = policies.begin(); p_it != policies.end(); ++p_it)
@@ -132,12 +133,13 @@ int main()
 		}
 		/* and then create teams */
 		std::vector<Agent> team;
-		for (int i = 0; i < NUM_BEACHES; ++i)
+		team.reserve(_NUM_AGENTS);
+		for (int i = 0; i < _NUM_BEACHES; ++i)
 		{
 			team.clear();
-			for (int a = 0; a < NUM_AGENTS; ++a)
+			for (int a = 0; a < _NUM_AGENTS; ++a)
 			{
-				team.push_back(Agent(policies[ (NUM_AGENTS * i) + a ]));
+				team.emplace_back(policies[ (_NUM_AGENTS * i) + a ]);
 			}
 			/* Give teams to a beach */
 			coastline[i].clearAgents();
@@ -147,20 +149,22 @@ int main()
 		// made a seperate loop for potential threading in the future
 		/* Run a day on the beach and get rewards */
 		agents.clear();
-		agents.reserve(NUM_AGENTS * NUM_BEACHES);
+		agents.reserve(_NUM_AGENTS * _NUM_BEACHES);
 
-		for (int i = 0; i < NUM_BEACHES; ++i)
+		//team.clear();
+		for (int i = 0; i < _NUM_BEACHES; ++i)
 		{
 			coastline[i].RunBeach();
 			coastline[i].RewardAgents(reward_file);
 
 			/* Recreate a sortable version of the agents. */
-			std::vector<Agent> team;
 			coastline[i].extractAgents(team);
 			agents.insert(agents.end(), team.begin(), team.end());
 		}
 		std::sort(agents.begin(), agents.end());
 
+		std::cout << "KILLING!" << std::endl;
+		std::cout << "size: " << agents.size()/2 << std::endl;
 		/* kill the older agents */
 		for (auto a_it = agents.begin(); a_it != agents.begin()+(agents.size()/2); ++a_it)
 		{
@@ -182,7 +186,13 @@ int main()
 			}
 			delete dead_policy;
 		}
+		/* Remove policies from successful agents */
+		for (auto a_it = agents.begin()+(agents.size()/2); a_it != agents.end(); ++a_it)
+		{
+			a_it->setAddress(NULL);
+		}
 		/* Policies of lower half are destroyed. Now to make new ones and mutate */
+		std::cout << "Policy size: " << policies.size() << std::endl;
 		doublePopulation(policies);
 	} // END GENERATION LOOP
 

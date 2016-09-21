@@ -40,8 +40,7 @@ class Beach
 	private:
 		/* Members */
 		std::vector<Agent> agents;
-		int beach_sections[BEACH_WIDTH];
-		int num_agents;
+		int beach_sections[_BEACH_WIDTH];
 
 		/* Methods */
 		//std::vector<int> GetAgentActions();
@@ -57,7 +56,6 @@ class Beach
 		void RunBeach();
 		void RandomInit();
 		void Print();
-		int getnum_agents();
 		void setAgents(std::vector<Agent>);
 		void clearAgents();
 		void RewardAgents(std::ofstream&);

@@ -26,20 +26,20 @@
 #define _CONFIG_H
 
 /* Variable definitions */
-#define NUM_GENERATIONS 10000
-#define TIMESTEPS 25
-#define NUM_AGENTS 20 // Defines the number of agents on a beach
-#define NUM_BEACHES 1
-#define BEACH_WIDTH 6
-#define PSI 3 // Defines the optimal capacity of people on a section of a beach.
+#define _NUM_GENERATIONS 15
+#define _TIMESTEPS 25
+#define _NUM_AGENTS 25 // Defines the number of agents on a beach
+#define _NUM_BEACHES 5
+#define _BEACH_WIDTH 6
+#define _PSI 3 // Defines the optimal capacity of people on a section of a beach.
 
 /* nn variables */
-#define NUMBER_OF_LAYERS 4
-#define RANDOM_WEIGHTS true
-#define RANDOM_NET_MIN -10.0
-#define RANDOM_NET_MAX 10.0
-#define NN_INPUT_LAYER BEACH_WIDTH+1
-#define NN_OUT_LAYER 3
+#define _NUMBER_OF_LAYERS 4
+#define _RANDOM_WEIGHTS true
+#define _RANDOM_NET_MIN -10.0
+#define _RANDOM_NET_MAX 10.0
+#define _NN_INPUT_LAYER _BEACH_WIDTH+1
+#define _NN_OUT_LAYER 3
 
 /* FANN */
 #include <fann.h>
