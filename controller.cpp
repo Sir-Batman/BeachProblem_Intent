@@ -106,17 +106,38 @@ int main()
 
 	srand(time(NULL));
 
+	/* Open Logging files */
+	struct stat buffer;
+	std::string filename;
+
+	filename = "data/max_d_rewards_4.csv";
+	/* Test if files already exist. If so, abort program*/
+	if ( stat(filename.c_str(), &buffer) == 0)
+	{
+		std::cout << "File <" << filename << "> already exists. Aborting Simulation." << std::endl;
+		exit(1);
+	}
+	std::ofstream d_reward_file;
+	d_reward_file.open(filename);
+
+	filename = "data/g_rewards_4.csv";
+	/* Test if files already exist. If so, abort program*/
+	if ( stat(filename.c_str(), &buffer) == 0)
+	{
+		std::cout << "File " << filename << " already exists. Aborting Simulation." << std::endl;
+		exit(1);
+	}
+	std::ofstream g_reward_file;
+	g_reward_file.open(filename);
+
 	std::vector<FANN::neural_net *> policies;
 	createPolicies(NC, policies);
-
 	std::vector<Beach> coastline(_NUM_BEACHES);
+	std::vector<Agent> agents;
 
 	//auto engine = std::mt19937{std::random_device{}()};
 
-	/* Open Logging files */
-	std::ofstream reward_file;
-	reward_file.open("data/max_rewards_1.csv");
-	std::vector<Agent> agents;
+	double reward_max = 0;
 	for (int gen = 0; gen < _NUM_GENERATIONS; ++gen)
 	{
 		std::cout << "BEGINING GENERATION " <<  gen << std::endl;
@@ -154,7 +175,8 @@ int main()
 		for (int i = 0; i < _NUM_BEACHES; ++i)
 		{
 			coastline[i].RunBeach();
-			coastline[i].RewardAgents(reward_file);
+			coastline[i].RewardAgents(d_reward_file, g_reward_file, reward_max);
+
 
 			/* Recreate a sortable version of the agents. */
 			coastline[i].extractAgents(team);
@@ -195,7 +217,10 @@ int main()
 		doublePopulation(policies);
 	} // END GENERATION LOOP
 
+	d_reward_file.close();
+	g_reward_file.close();
 	destroyPolicies(policies);
 	delete [] NC.layers;
+
 	return 0;
 }

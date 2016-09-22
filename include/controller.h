@@ -29,6 +29,7 @@
 #include <algorithm>
 #include <random>
 #include <fstream>
+#include <sys/stat.h>
 
 #include <fann.h>
 #include <fann_cpp.h>

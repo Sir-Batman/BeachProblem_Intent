@@ -35,6 +35,7 @@
 #include "agent.h"
 #include "state.h"
 
+#include <fstream>
 class Beach
 {
 	private:
@@ -58,7 +59,7 @@ class Beach
 		void Print();
 		void setAgents(std::vector<Agent>);
 		void clearAgents();
-		void RewardAgents(std::ofstream&);
+		void RewardAgents(std::ofstream&, std::ofstream&, double&);
 		void extractAgents(std::vector<Agent> &);
 };
 

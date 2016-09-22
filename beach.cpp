@@ -89,7 +89,7 @@ void Beach::ExecuteTimeStep()
 	// TODO Log information?
 }
 
-/* Calculates the reward for an individual beach section 
+/* Local reward L : Calculates the reward for an individual beach section 
  * given the number of people on the section of the beach.
  * PSI defined in config.h */
 double Beach::L(double x_t)
@@ -126,7 +126,14 @@ void Beach::D(std::vector<double> &rewards)
 	for (int a = 0; a < _NUM_AGENTS; ++a)
 	{
 		int s = agents[a].getPos();
+#if (_TEST_TYPE == 'D')
+		/* For standard D */
 		rewards.push_back(L(beach_sections[s]) - L(beach_sections[s] - 1));
+#endif
+#if (_TEST_TYPE == 'A')
+		/* for accumulation */
+		agents[a].setReward(agents[a].getReward() + rewards.back());
+#endif
 	}
 }
 
@@ -142,9 +149,15 @@ void Beach::RunBeach()
 	{
 		//Print();
 		ExecuteTimeStep();
+		std::vector<double> rewards;
+		D(rewards);
+		auto r_it = rewards.begin();
+		for (auto it = agents.begin(); it != agents.end(); ++it)
+		{
+			it->setReward(it->getReward() + *r_it);
+		}
 	}
-	Print();
-
+	//Print();
 }
 
 void Beach::RandomInit()
@@ -180,7 +193,7 @@ void Beach::setAgents(std::vector<Agent> agents)
 
 void Beach::clearAgents() { this->agents.clear(); }
 
-void Beach::RewardAgents(std::ofstream &reward_out)
+void Beach::RewardAgents(std::ofstream &d_out, std::ofstream &g_out, double &reward_max)
 {
 	std::vector<double> rewards;
 	this->D(rewards);
@@ -189,7 +202,12 @@ void Beach::RewardAgents(std::ofstream &reward_out)
 	for (int a = 0; a < _NUM_AGENTS; ++a)
 	{
 		std::cout << rewards[a] << " ";
+#if (_TEST_TYPE == 'D')
 		this->agents[a].setReward(rewards[a]);
+#endif
+#if (_TEST_TYPE == 'A')
+		this->agents[a].setReward(rewards[a] + this->agents[a].getReward());
+#endif
 		if (max < rewards[a])
 		{
 			max = rewards[a];
@@ -197,19 +215,34 @@ void Beach::RewardAgents(std::ofstream &reward_out)
 	}
 	std::cout << std::endl;
 	std::cout << "Max reward: " << max << std::endl;
-	reward_out << max << std::endl;;
+	d_out << max << std::endl;;
 	
 	/* comparision to G */
 	rewards.clear();
 	this->G(rewards);
 	std::cout << "VS G: " << rewards[0] << std::endl;
+	g_out << rewards[0] << std::endl;
+
+	if (reward_max < rewards[0])
+	{
+		reward_max = rewards[0];
+		Print();
+	}
+
+
+#if (_TEST_TYPE == 'G')
+	/* reward with G, not d */
+	for (auto it = agents.begin(); it != agents.end(); ++it)
+	{
+		it->setReward(rewards[0]);
+	}
+#endif
+	
 
 #ifdef DEBUG
 	/* debugging info */
-	std::cout << " INFO: " << agents.size() <<  std::endl;
+	//std::cout << " INFO: " << agents.size() <<  std::endl;
 #endif
-
-
 }
 
 void Beach::extractAgents(std::vector<Agent> &other)

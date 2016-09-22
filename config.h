@@ -26,19 +26,25 @@
 #define _CONFIG_H
 
 /* Variable definitions */
-#define _NUM_GENERATIONS 15
+#define _NUM_GENERATIONS 1000
 #define _TIMESTEPS 25
-#define _NUM_AGENTS 25 // Defines the number of agents on a beach
-#define _NUM_BEACHES 5
+#define _NUM_AGENTS 100 // Defines the number of agents on a beach
+#define _NUM_BEACHES 10
 #define _BEACH_WIDTH 6
 #define _PSI 3 // Defines the optimal capacity of people on a section of a beach.
+/* Valid _TEST_TYPE options:
+ * D - learn using basic difference rewards
+ * A - learn using accululated difference rewards
+ *     (D summmed up each time step)
+ * G - learn using global rewards */
+#define _TEST_TYPE 'D'
 
 /* nn variables */
 #define _NUMBER_OF_LAYERS 4
 #define _RANDOM_WEIGHTS true
 #define _RANDOM_NET_MIN -10.0
 #define _RANDOM_NET_MAX 10.0
-#define _NN_INPUT_LAYER _BEACH_WIDTH+1
+#define _NN_INPUT_LAYER 1
 #define _NN_OUT_LAYER 3
 
 /* FANN */
