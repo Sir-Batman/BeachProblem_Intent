@@ -36,7 +36,7 @@
 typedef struct State {
 
 	double& operator[](int i) { return array[i]; }
-	double array[_BEACH_WIDTH+1];
+	double array[_NN_INPUT_LAYER];
 
 } State;
 

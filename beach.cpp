@@ -44,10 +44,12 @@ State Beach::CalculateState(int agent_id)
 	State s;
 	s[SELF_POS] = agents[agent_id].getPos();
 	
+	/*
 	for (int s_i = 1; s_i < _BEACH_WIDTH +1; ++s_i)
 	{
 		s[s_i] = beach_sections[s_i-1];
 	}
+	*/
 
 	return s;
 }
@@ -172,16 +174,21 @@ void Beach::RandomInit()
 
 void Beach::Print()
 {
-	std::cout << std::endl;
+	
+	std::ofstream out;
+	out.open("best_config.out", std::ofstream::app);
+
+	out << std::endl;
 	for (int section=0; section < _BEACH_WIDTH; ++section)
 	{
-		std::cout << "~";
+		out << "~";
 		for (int a=0; a < beach_sections[section]; ++a)
 		{
-			std::cout << "+";
+			out << "+";
 		}
-		std::cout << std::endl;
+		out << std::endl;
 	}
+	out.close();
 }
 
 void Beach::setAgents(std::vector<Agent> agents)
