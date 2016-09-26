@@ -55,7 +55,7 @@ class Beach
 		/* Methods */
 		Beach();
 		void RunBeach();
-		void RandomInit();
+		void Init();
 		void Print();
 		void setAgents(std::vector<Agent>);
 		void clearAgents();

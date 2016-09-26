@@ -110,7 +110,7 @@ int main()
 	struct stat buffer;
 	std::string filename;
 
-	filename = "data/max_d_rewards_4.csv";
+	filename = "data/max_d_rewards_6.csv";
 	/* Test if files already exist. If so, abort program*/
 	if ( stat(filename.c_str(), &buffer) == 0)
 	{
@@ -120,7 +120,7 @@ int main()
 	std::ofstream d_reward_file;
 	d_reward_file.open(filename);
 
-	filename = "data/g_rewards_4.csv";
+	filename = "data/g_rewards_6.csv";
 	/* Test if files already exist. If so, abort program*/
 	if ( stat(filename.c_str(), &buffer) == 0)
 	{

@@ -18,7 +18,7 @@
 *  You should have received a copy of the GNU General Public License
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
-
+//TODO: fix the #if compilation stuff somehow.
 #include "beach.h"
 
 Beach::Beach()
@@ -128,10 +128,8 @@ void Beach::D(std::vector<double> &rewards)
 	for (int a = 0; a < _NUM_AGENTS; ++a)
 	{
 		int s = agents[a].getPos();
-#if (_TEST_TYPE == 'D')
 		/* For standard D */
 		rewards.push_back(L(beach_sections[s]) - L(beach_sections[s] - 1));
-#endif
 #if (_TEST_TYPE == 'A')
 		/* for accumulation */
 		agents[a].setReward(agents[a].getReward() + rewards.back());
@@ -146,11 +144,12 @@ void Beach::RunBeach()
 	{
 		beach_sections[i] = 0;
 	}
-	RandomInit();
+	Init();
 	for (int t = 0; t < _TIMESTEPS; ++t)
 	{
 		//Print();
 		ExecuteTimeStep();
+#if (_TEST_TYPE == 'A')
 		std::vector<double> rewards;
 		D(rewards);
 		auto r_it = rewards.begin();
@@ -158,15 +157,18 @@ void Beach::RunBeach()
 		{
 			it->setReward(it->getReward() + *r_it);
 		}
+#endif
 	}
 	//Print();
 }
 
-void Beach::RandomInit()
+void Beach::Init()
 {
+	/* Agents no longer randomly initialized, 
+	 * but rather all start at position N */
+	int position = 3;
 	for (int a_id = 0; a_id < _NUM_AGENTS; ++a_id)
 	{
-		int position = rand() % _BEACH_WIDTH;
 		agents[a_id].setPos(position);
 		++beach_sections[position];
 	}
@@ -203,8 +205,9 @@ void Beach::clearAgents() { this->agents.clear(); }
 void Beach::RewardAgents(std::ofstream &d_out, std::ofstream &g_out, double &reward_max)
 {
 	std::vector<double> rewards;
-	this->D(rewards);
 	double max = -DBL_MAX;
+#if (_TEST_TYPE == 'D' || _TEST_TYPE == 'A')
+	this->D(rewards);
 	std::cout << "Rewards: [";
 	for (int a = 0; a < _NUM_AGENTS; ++a)
 	{
@@ -220,6 +223,7 @@ void Beach::RewardAgents(std::ofstream &d_out, std::ofstream &g_out, double &rew
 			max = rewards[a];
 		}
 	}
+#endif
 	std::cout << std::endl;
 	std::cout << "Max reward: " << max << std::endl;
 	d_out << max << std::endl;;
@@ -235,7 +239,6 @@ void Beach::RewardAgents(std::ofstream &d_out, std::ofstream &g_out, double &rew
 		reward_max = rewards[0];
 		Print();
 	}
-
 
 #if (_TEST_TYPE == 'G')
 	/* reward with G, not d */
